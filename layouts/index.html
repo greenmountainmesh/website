@@ -1,0 +1,106 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Vermont Meshtastic Community</p>
+      <h1>Resilient, free, and decentralized communication for the Green Mountains.</h1>
+      <p class="lead">Green Mountain Mesh is a volunteer-run group building a Meshtastic network across Vermont. We focus on education, collaborative deployments, and partnerships that expand coverage for everyone.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#get-involved">Get involved</a>
+        <a class="button ghost" href="{{ "/blog/" | relURL }}">Read the blog</a>
+      </div>
+      <div class="hero-meta">
+        <div>
+          <strong>Community-first</strong>
+          <span>Led by volunteers and local partners</span>
+        </div>
+        <div>
+          <strong>Mesh-powered</strong>
+          <span>Built on Meshtastic + LoRa hardware</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>What we do</h3>
+      <ul>
+        <li>Host and maintain long-range relay nodes</li>
+        <li>Teach new operators how to build and deploy devices</li>
+        <li>Coordinate with landowners for strategic placements</li>
+        <li>Document coverage, lessons learned, and local guides</li>
+      </ul>
+      <div class="card-highlight">
+        <span>Next build day</span>
+        <strong>Community-led planning</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mission">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Our purpose</h2>
+      <p>We believe Vermont deserves a resilient, community-owned layer of communication that keeps people connected when infrastructure is limited.</p>
+    </div>
+    <div class="grid-3">
+      <article>
+        <h3>Educate & onboard</h3>
+        <p>We host hands-on sessions for newcomers—covering radios, firmware, antennas, and safe deployment practices.</p>
+      </article>
+      <article>
+        <h3>Strategic placements</h3>
+        <p>We work with landowners and local organizations to place nodes where they can support the widest possible coverage.</p>
+      </article>
+      <article>
+        <h3>Share what we learn</h3>
+        <p>Our blog captures field notes, build recipes, and Vermont-specific deployment insights.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section accent" id="get-involved">
+  <div class="container involvement">
+    <div>
+      <h2>Get involved</h2>
+      <p>Whether you are brand new to Meshtastic or already running nodes, there is a place for you in the mesh.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span>01</span>
+        <h4>Join a build</h4>
+        <p>We share hardware kits, assemble nodes, and compare antenna setups together.</p>
+      </div>
+      <div class="step">
+        <span>02</span>
+        <h4>Host a node</h4>
+        <p>Offer a rooftop, barn, or hillside to extend coverage for the community.</p>
+      </div>
+      <div class="step">
+        <span>03</span>
+        <h4>Report coverage</h4>
+        <p>Share signal maps and real-world performance so we can keep refining placements.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Latest from the blog</h2>
+      <p>Field notes, deployment recaps, and build guides from across Vermont.</p>
+    </div>
+    <div class="grid-3">
+      {{ range first 3 (where .Site.RegularPages "Section" "blog") }}
+        <article class="post-card">
+          <p class="post-meta">{{ .Date.Format "Jan 2, 2006" }} · {{ with .Params.author }}{{ $name := replaceRE "^@" "" . }}by @{{ $name }}{{ else }}by community{{ end }}</p>
+          <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+          <p>{{ .Summary }}</p>
+          <a class="text-link" href="{{ .RelPermalink }}">Read post</a>
+        </article>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

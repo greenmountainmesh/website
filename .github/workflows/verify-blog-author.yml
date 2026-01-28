@@ -1,0 +1,81 @@
+name: Verify Blog Author
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  verify-author:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate blog post authors
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const pr = context.payload.pull_request;
+            const prAuthor = pr.user.login.toLowerCase();
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+
+            const postFiles = files
+              .map(file => file.filename)
+              .filter(name => name.startsWith('content/blog/') && name.endsWith('.md'));
+
+            if (postFiles.length === 0) {
+              core.notice('No blog posts changed in this pull request.');
+              return;
+            }
+
+            const failures = [];
+
+            for (const file of postFiles) {
+              const fullPath = path.join(process.env.GITHUB_WORKSPACE, file);
+
+              if (!fs.existsSync(fullPath)) {
+                failures.push(`${file}: file not found in checkout`);
+                continue;
+              }
+
+              const content = fs.readFileSync(fullPath, 'utf8');
+              const frontMatterMatch = content.match(/^---\s*([\s\S]*?)\s*---/);
+
+              if (!frontMatterMatch) {
+                failures.push(`${file}: missing YAML front matter`);
+                continue;
+              }
+
+              const frontMatter = frontMatterMatch[1];
+              const authorMatch = frontMatter.match(/^author:\s*"?(@?[A-Za-z0-9-]+)"?/m);
+
+              if (!authorMatch) {
+                failures.push(`${file}: missing author field`);
+                continue;
+              }
+
+              const author = authorMatch[1].replace(/^@/, '').toLowerCase();
+
+              if (author !== prAuthor) {
+                failures.push(`${file}: author '${authorMatch[1]}' does not match PR author '@${pr.user.login}'`);
+              }
+            }
+
+            if (failures.length) {
+              core.setFailed(`Blog author check failed:\n${failures.join('\n')}`);
+            } else {
+              core.notice(`All blog posts attributed to @${pr.user.login}.`);
+            }

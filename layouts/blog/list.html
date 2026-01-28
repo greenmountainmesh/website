@@ -1,0 +1,27 @@
+{{ define "main" }}
+<section class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Field Notes</p>
+    <h1>{{ .Title }}</h1>
+    <p class="lead">{{ .Params.description }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="post-list">
+      {{ range .Paginator.Pages }}
+        <article class="post-row">
+          <div>
+            <p class="post-meta">{{ .Date.Format "Jan 2, 2006" }} · {{ with .Params.author }}{{ $name := replaceRE "^@" "" . }}by @{{ $name }}{{ else }}by community{{ end }}</p>
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <p>{{ .Summary }}</p>
+          </div>
+          <a class="button ghost" href="{{ .RelPermalink }}">Read</a>
+        </article>
+      {{ end }}
+    </div>
+    {{ template "_internal/pagination.html" . }}
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,10 @@
+baseURL = "https://greenmountainmesh.com/"
+languageCode = "en-us"
+title = "Green Mountain Mesh"
+pagination.pagerSize = 6
+
+[params]
+  description = "Volunteer-built Meshtastic network helping connect Vermont with free, decentralized communication."
+
+[permalinks]
+  blog = "/blog/:year/:month/:slug/"
